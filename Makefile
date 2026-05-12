@@ -15,7 +15,7 @@ COMMON_SRC = $(SRC_DIR)/shm.c $(SRC_DIR)/sem.c $(SRC_DIR)/msgq.c $(SRC_DIR)/log.
 # 监控模块源文件
 MONITOR_SRC = $(MONITOR_DIR)/memory.c $(MONITOR_DIR)/temp.c $(MONITOR_DIR)/cpu.c $(MONITOR_DIR)/disk.c $(MONITOR_DIR)/network_stat.c
 
-#TCP 文件
+# TCP / 配置 / 协议文件
 TCP_SRC = $(SRC_DIR)/tcp_client.c
 CONFIG_SRC = $(SRC_DIR)/config.c
 PROTOCOL_SRC = $(SRC_DIR)/protocol.c
@@ -24,10 +24,11 @@ PROTOCOL_SRC = $(SRC_DIR)/protocol.c
 MANAGER = manager
 COLLECTOR = collector
 NETWORK = network
-LOGGER  = logger
+LOGGER = logger
+WEB = web
 
 # 默认目标
-all: $(MANAGER) $(COLLECTOR) $(NETWORK) $(LOGGER)
+all: $(MANAGER) $(COLLECTOR) $(NETWORK) $(LOGGER) $(WEB)
 
 # 编译 manager
 $(MANAGER): $(APP_DIR)/manager.c $(COMMON_SRC) $(CONFIG_SRC)
@@ -43,6 +44,10 @@ $(NETWORK): $(APP_DIR)/network.c $(COMMON_SRC) $(CONFIG_SRC) $(TCP_SRC) $(PROTOC
 
 # 编译 logger
 $(LOGGER): $(APP_DIR)/logger.c $(COMMON_SRC)
+	$(CC) $(CFLAGS) -o $@ $^ -lrt -pthread
+
+# 编译 web
+$(WEB): $(APP_DIR)/web.c $(COMMON_SRC)
 	$(CC) $(CFLAGS) -o $@ $^ -lrt -pthread
 
 # 编译测试程序（只链接需要的 monitor 模块）
@@ -80,8 +85,8 @@ $(TEST_CONFIG): test/test_config.c src/config.c
 	$(CC) $(CFLAGS) -o $@ $^
 
 # 一键编译所有测试
-tests: $(TEST_MEMORY) $(TEST_TEMP) $(TEST_CPU) $(TEST_MSGQ) $(TEST_TCP_CLIENT) $(TEST_TCP_SERVER) $(TEST_PROTOCOL) $(TEST_CONFIG) 
+tests: $(TEST_MEMORY) $(TEST_TEMP) $(TEST_CPU) $(TEST_MSGQ) $(TEST_TCP_CLIENT) $(TEST_TCP_SERVER) $(TEST_PROTOCOL) $(TEST_CONFIG)
 
 # 清理
 clean:
-	rm -f $(MANAGER) $(COLLECTOR) $(NETWORK) $(LOGGER) $(TEST_MEMORY) $(TEST_TEMP) $(TEST_CPU) $(TEST_MSGQ) $(TEST_TCP_CLIENT) $(TEST_TCP_SERVER) $(TEST_PROTOCOL) $(TEST_CONFIG)
+	rm -f $(MANAGER) $(COLLECTOR) $(NETWORK) $(LOGGER) $(WEB) $(TEST_MEMORY) $(TEST_TEMP) $(TEST_CPU) $(TEST_MSGQ) $(TEST_TCP_CLIENT) $(TEST_TCP_SERVER) $(TEST_PROTOCOL) $(TEST_CONFIG)
