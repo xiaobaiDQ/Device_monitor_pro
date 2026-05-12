@@ -1,0 +1,5 @@
+CompileFlags:
+  Add:
+    - -I/home/xiaobai/device_monitor_pro/include
+    - -I/home/xiaobai/device_monitor_pro/app
+    - -I/home/xiaobai/device_monitor_pro/src
